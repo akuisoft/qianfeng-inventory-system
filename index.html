@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前锋电器进销存管理系统 · 模块功能可视化介绍</title>
+<style>
+  :root {
+    --brand: #e1251b;
+    --brand-dark: #b01a12;
+    --brand-light: #fff1f0;
+    --ink: #1f2430;
+    --ink-2: #4b5263;
+    --ink-3: #8a919f;
+    --line: #ebeef5;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --gold: #f5a623;
+    --green: #18a058;
+    --blue: #2b6de8;
+    --purple: #7b5cd6;
+    --cyan: #0fb9b1;
+    --shadow: 0 6px 24px rgba(31, 36, 48, .06);
+    --shadow-lg: 0 14px 40px rgba(31, 36, 48, .10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand); text-decoration: none; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #3a0d0a 0%, #7c1610 45%, #c21f16 100%);
+    color: #fff;
+    padding: 64px 0 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(600px 300px at 85% 20%, rgba(255,255,255,.10), transparent 60%),
+      radial-gradient(500px 320px at 8% 85%, rgba(255,255,255,.08), transparent 60%);
+  }
+  .hero .wrap { position: relative; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; letter-spacing: 1px; margin-bottom: 22px;
+    backdrop-filter: blur(6px);
+  }
+  .hero h1 {
+    font-size: 42px; line-height: 1.25; font-weight: 800;
+    letter-spacing: 1px; margin-bottom: 16px;
+  }
+  .hero h1 .sub { display: block; font-size: 20px; font-weight: 500; opacity: .9; margin-top: 10px; }
+  .hero p.lead { font-size: 16px; max-width: 720px; opacity: .92; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .hero-tags span {
+    font-size: 13px; padding: 6px 14px; border-radius: 8px;
+    background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22);
+  }
+
+  /* ===== 数字概览 ===== */
+  .stats {
+    margin-top: -64px;
+    position: relative;
+    z-index: 2;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .stat {
+    background: var(--card); border-radius: 16px; padding: 26px 24px;
+    box-shadow: var(--shadow-lg); text-align: center;
+    border-top: 3px solid var(--brand);
+  }
+  .stat .num { font-size: 40px; font-weight: 800; color: var(--brand); line-height: 1; }
+  .stat .num small { font-size: 18px; font-weight: 600; }
+  .stat .label { margin-top: 10px; color: var(--ink-2); font-size: 14px; }
+
+  /* ===== 通用区块 ===== */
+  section { padding: 64px 0; }
+  .sec-head { text-align: center; margin-bottom: 44px; }
+  .sec-head .kicker {
+    display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 2px;
+    color: var(--brand); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .sec-head h2 { font-size: 30px; font-weight: 800; }
+  .sec-head p { color: var(--ink-2); margin-top: 10px; max-width: 660px; margin-left: auto; margin-right: auto; }
+
+  /* ===== 架构图 ===== */
+  .arch { background: #fff; }
+  .arch-layers { display: flex; flex-direction: column; gap: 14px; max-width: 900px; margin: 0 auto; }
+  .layer {
+    display: flex; align-items: stretch; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .layer .tag {
+    flex: 0 0 150px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: #fff; padding: 18px 10px; text-align: center;
+  }
+  .layer .items {
+    flex: 1; display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 18px; background: #fafbfc;
+  }
+  .chip {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 13px; font-size: 13px; color: var(--ink-2); font-weight: 500;
+  }
+  .tag.c1 { background: linear-gradient(135deg,#e1251b,#f05a4e); }
+  .tag.c2 { background: linear-gradient(135deg,#7b5cd6,#9d85e6); }
+  .tag.c3 { background: linear-gradient(135deg,#2b6de8,#5c93f0); }
+  .tag.c4 { background: linear-gradient(135deg,#18a058,#3ec77f); }
+  .tag.c5 { background: linear-gradient(135deg,#f5a623,#f7c06a); }
+
+  /* ===== 模块卡片 ===== */
+  .mods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .mod {
+    background: var(--card); border-radius: 16px; padding: 26px;
+    box-shadow: var(--shadow); border: 1px solid var(--line);
+    transition: transform .22s ease, box-shadow .22s ease;
+    display: flex; flex-direction: column;
+  }
+  .mod:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+  .mod .icon {
+    width: 52px; height: 52px; border-radius: 13px; display: flex; align-items: center;
+    justify-content: center; font-size: 26px; margin-bottom: 16px; color: #fff;
+  }
+  .mod h3 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .mod .en { font-size: 12px; color: var(--ink-3); letter-spacing: 1px; margin-bottom: 14px; }
+  .mod ul { list-style: none; }
+  .mod li {
+    position: relative; padding-left: 18px; font-size: 14px; color: var(--ink-2);
+    margin-bottom: 9px;
+  }
+  .mod li::before {
+    content: ""; position: absolute; left: 0; top: 8px; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--brand);
+  }
+  .mod .hl { margin-top: auto; }
+  .mod .hl span {
+    display: inline-block; font-size: 12px; font-weight: 600; color: var(--brand);
+    background: var(--brand-light); padding: 4px 10px; border-radius: 6px; margin-top: 12px;
+  }
+  .ic-1 { background: linear-gradient(135deg,#e1251b,#f05a4e); }
+  .ic-2 { background: linear-gradient(135deg,#7b5cd6,#9d85e6); }
+  .ic-3 { background: linear-gradient(135deg,#2b6de8,#5c93f0); }
+  .ic-4 { background: linear-gradient(135deg,#f5a623,#f7c06a); }
+  .ic-5 { background: linear-gradient(135deg,#18a058,#3ec77f); }
+  .ic-6 { background: linear-gradient(135deg,#0fb9b1,#48d3cc); }
+  .ic-7 { background: linear-gradient(135deg,#e67e22,#f0a55a); }
+  .ic-8 { background: linear-gradient(135deg,#d81b60,#ef5b8c); }
+  .ic-9 { background: linear-gradient(135deg,#3949ab,#6b7fe0); }
+
+  /* ===== 业务流程 ===== */
+  .flow { background: #fff; }
+  .flow-item { max-width: 960px; margin: 0 auto 40px; }
+  .flow-item:last-child { margin-bottom: 0; }
+  .flow-title {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .flow-title .no {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--brand);
+    color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .flow-title h3 { font-size: 19px; font-weight: 700; }
+  .flow-steps { display: flex; align-items: stretch; gap: 0; }
+  .step {
+    flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 16px; position: relative; text-align: center;
+  }
+  .step .s-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .step .s-desc { font-size: 12.5px; color: var(--ink-2); }
+  .arrow {
+    flex: 0 0 34px; display: flex; align-items: center; justify-content: center;
+    color: var(--brand); font-size: 22px; font-weight: 700;
+  }
+  .step.hot { background: var(--brand-light); border-color: #f6c6c2; }
+  .step.hot .s-title { color: var(--brand); }
+
+  /* ===== 技术栈 ===== */
+  .tech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .tech {
+    background: var(--card); border-radius: 14px; padding: 22px; text-align: center;
+    box-shadow: var(--shadow); border: 1px solid var(--line);
+  }
+  .tech .t-icon { font-size: 30px; margin-bottom: 10px; }
+  .tech .t-name { font-weight: 700; font-size: 15px; }
+  .tech .t-desc { font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
+
+  /* ===== 角色 ===== */
+  .roles {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 900px; margin: 0 auto;
+  }
+  .role {
+    background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 18px; font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+    box-shadow: var(--shadow);
+  }
+  .role .r-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); margin-right: 7px; }
+
+  footer {
+    background: #22100e; color: rgba(255,255,255,.75); padding: 40px 0; text-align: center; font-size: 13px;
+  }
+  footer b { color: #fff; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .mods-grid { grid-template-columns: 1fr 1fr; }
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+    .layer { flex-direction: column; }
+    .layer .tag { flex: none; padding: 12px; }
+    .flow-steps { flex-direction: column; gap: 10px; }
+    .arrow { transform: rotate(90deg); flex: none; padding: 2px 0; }
+    .hero h1 { font-size: 32px; }
+  }
+  @media (max-width: 560px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .mods-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Hero ============ -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-badge">⚡ 私有化部署 · 数据不出内网</div>
+    <h1>前锋电器进销存管理系统
+      <span class="sub">含渠道终端态势分析感知</span>
+    </h1>
+    <p class="lead">面向集团多组织（工厂 + 经销商 + 分销商）的厨卫电器行业进销存与渠道经营平台，
+      覆盖采购、销售、库存、服务、返利、财务与渠道态势感知全链路，支持 SN 全生命周期追溯与 T+21 智能预测。</p>
+    <div class="hero-tags">
+      <span>🏭 集团多组织</span>
+      <span>🧾 采购三级审核</span>
+      <span>📦 FIFO + SN 追溯</span>
+      <span>🗺️ 行政区划四级矢量地图</span>
+      <span>📈 T+21 销售预测</span>
+      <span>💰 返利兑现闭环</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 数字概览 ============ -->
+<div class="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat"><div class="num">9<small> 大</small></div><div class="label">业务功能模块</div></div>
+      <div class="stat"><div class="num">11<small> 种</small></div><div class="label">角色 RBAC 权限</div></div>
+      <div class="stat"><div class="num">44<small> 张</small></div><div class="label">数据库业务表</div></div>
+      <div class="stat"><div class="num">4<small> 级</small></div><div class="label">行政区划下钻（省→市→区县→乡镇街道）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 架构 ============ -->
+<section class="arch">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Architecture</span>
+      <h2>系统总体架构</h2>
+      <p>前后端分离 + 多模块微服务化分层，Docker Compose 一键部署，Nginx 统一接入。</p>
+    </div>
+    <div class="arch-layers">
+      <div class="layer">
+        <div class="tag c1">接入层</div>
+        <div class="items">
+          <span class="chip">🖥️ PC 管理后台（Vue3 + Element Plus）</span>
+          <span class="chip">📊 态势大屏（ECharts 离线地图）</span>
+          <span class="chip">📱 移动采集端（uni-app 扫码）</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="tag c2">网关与安全</div>
+        <div class="items">
+          <span class="chip">🔐 JWT 认证 + Spring Security</span>
+          <span class="chip">👥 RBAC 角色权限</span>
+          <span class="chip">🏢 组织树行级数据隔离</span>
+          <span class="chip">🔒 字段级权限（成本价不可见）</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="tag c3">业务服务层</div>
+        <div class="items">
+          <span class="chip">qf-system 系统管理</span>
+          <span class="chip">qf-base 基础资料</span>
+          <span class="chip">qf-purchase 采购</span>
+          <span class="chip">qf-sales 销售</span>
+          <span class="chip">qf-stock 库存</span>
+          <span class="chip">qf-service 服务</span>
+          <span class="chip">qf-finance 财务返利</span>
+          <span class="chip">qf-situational 态势感知</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="tag c4">数据层</div>
+        <div class="items">
+          <span class="chip">🐬 MySQL 8（44 张业务表）</span>
+          <span class="chip">⚡ Redis 缓存</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="tag c5">运行环境</div>
+        <div class="items">
+          <span class="chip">🐳 Docker Compose</span>
+          <span class="chip">🌐 Nginx 反向代理</span>
+          <span class="chip">🖥️ 本地化私有部署</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 模块 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Modules</span>
+      <h2>九大业务模块</h2>
+      <p>各模块职责清晰、边界独立，按业务域划分，支撑完整进销存闭环与渠道经营分析。</p>
+    </div>
+    <div class="mods-grid">
+
+      <div class="mod">
+        <div class="icon ic-1">👥</div>
+        <h3>系统管理</h3>
+        <div class="en">SYSTEM · 认证与权限</div>
+        <ul>
+          <li>用户 / 角色 / 菜单 / 组织管理</li>
+          <li>JWT 登录认证与令牌刷新</li>
+          <li>11 角色 RBAC + 组织树行级隔离</li>
+          <li>字段级权限，成本价按角色脱敏</li>
+        </ul>
+        <div class="hl"><span>11 角色 · 9 演示账号</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-2">🗂️</div>
+        <h3>基础资料</h3>
+        <div class="en">BASE · 主数据</div>
+        <ul>
+          <li>商品档案（型号 / 规格 / 成本价）</li>
+          <li>经销商 / 分销商 / 终端网点</li>
+          <li>仓库 / 库房独立管理</li>
+          <li>省市区街道四级行政区划</li>
+        </ul>
+        <div class="hl"><span>终端网点精确到乡镇街道</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-3">🧾</div>
+        <h3>采购管理</h3>
+        <div class="en">PURCHASE · 三级审核</div>
+        <ul>
+          <li>经销商提交 → 业务经理审核 → 订单审核专员终审</li>
+          <li>终审可录返利兑现 / 折扣，冲减采购应付</li>
+          <li>T+21 预测驱动的采购智能建议</li>
+          <li>返利防超兑校验 + 全程留痕</li>
+        </ul>
+        <div class="hl"><span>三级审核 · 智能建议</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-4">🛒</div>
+        <h3>销售管理</h3>
+        <div class="en">SALES · 订单</div>
+        <ul>
+          <li>销售订单开单与状态流转</li>
+          <li>经销商 / 终端多渠道出单</li>
+          <li>订单关联出库与应收结算</li>
+          <li>销售数据沉淀为态势与预测源</li>
+        </ul>
+        <div class="hl"><span>264 笔历史订单演示数据</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-5">📦</div>
+        <h3>库存管理</h3>
+        <div class="en">STOCK · FIFO + SN</div>
+        <ul>
+          <li>FIFO 批次成本自动结转</li>
+          <li>SN 序列号全生命周期追溯</li>
+          <li>出库强制扫码（摄像头 / 扫码枪）</li>
+          <li>三维库存预警（缺货 / 库龄 / 滞销 / 窜货 / 价格违规）</li>
+        </ul>
+        <div class="hl"><span>扫码出库 · FIFO · SN 追溯</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-6">🔧</div>
+        <h3>服务管理</h3>
+        <div class="en">SERVICE · 安装维修</div>
+        <ul>
+          <li>安装 / 维修工单管理</li>
+          <li>三包配件领用与核销</li>
+          <li>服务工程师派单与完工闭环</li>
+          <li>服务记录关联 SN 追溯</li>
+        </ul>
+        <div class="hl"><span>工单 + 配件一体化</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-7">💰</div>
+        <h3>财务与返利</h3>
+        <div class="en">FINANCE · 结算</div>
+        <ul>
+          <li>应收账款 / 应付账款管理</li>
+          <li>返利政策配置与余额台账</li>
+          <li>返利兑现单生成与冲减应付</li>
+          <li>返利计入经销商收入并留痕</li>
+        </ul>
+        <div class="hl"><span>返利兑现闭环</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-8">🗺️</div>
+        <h3>渠道态势感知</h3>
+        <div class="en">SITUATIONAL · 分析预警</div>
+        <ul>
+          <li>行政区域四级矢量地图（真实 GeoJSON 轮廓）</li>
+          <li>经销商点击钻取进销存、空白区域识别</li>
+          <li>T+21 移动平均 + 季节性销售预测</li>
+          <li>经销商评估（四维度加权 + 三级审批）</li>
+        </ul>
+        <div class="hl"><span>矢量地图 · 钻取 · 预测 · 评估</span></div>
+      </div>
+
+      <div class="mod">
+        <div class="icon ic-9">📱</div>
+        <h3>移动采集端</h3>
+        <div class="en">MOBILE · uni-app</div>
+        <ul>
+          <li>uni.scanCode 调用摄像头 / 扫码枪</li>
+          <li>出库扫码实时后端校验（在库 / 库房 / 型号 / 防重）</li>
+          <li>可发 H5 / 小程序 / App</li>
+          <li>终端网点数据移动采集</li>
+        </ul>
+        <div class="hl"><span>扫码出库联调</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 业务流程 ============ -->
+<section class="flow">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Workflow</span>
+      <h2>核心业务流程</h2>
+      <p>四条关键链路贯穿系统，支撑业务闭环与经营决策。</p>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-title"><div class="no">1</div><h3>采购三级审核 + 返利兑现</h3></div>
+      <div class="flow-steps">
+        <div class="step"><div class="s-title">经销商</div><div class="s-desc">提交采购订单</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">业务经理</div><div class="s-desc">一级审核</div></div>
+        <div class="arrow">→</div>
+        <div class="step hot"><div class="s-title">订单审核专员</div><div class="s-desc">终审 · 录入返利兑现 / 折扣</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">财务</div><div class="s-desc">冲减应付 · 计入经销商收入 · 留痕</div></div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-title"><div class="no">2</div><h3>SN 全生命周期追溯</h3></div>
+      <div class="flow-steps">
+        <div class="step"><div class="s-title">采购入库</div><div class="s-desc">SN 绑定批次</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">库内</div><div class="s-desc">FIFO 成本结转</div></div>
+        <div class="arrow">→</div>
+        <div class="step hot"><div class="s-title">扫码出库</div><div class="s-desc">强制扫码校验</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">服务追溯</div><div class="s-desc">安装 / 维修记录</div></div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-title"><div class="no">3</div><h3>经销商评估（四维度加权 + 三级审批）</h3></div>
+      <div class="flow-steps">
+        <div class="step"><div class="s-title">四维度</div><div class="s-desc">进货任务 40% + 主动营销 20% + 同比增长 20% + 业务经理考评 20%</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">业务经理</div><div class="s-desc">提交评估</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">业务主管</div><div class="s-desc">审核</div></div>
+        <div class="arrow">→</div>
+        <div class="step hot"><div class="s-title">业务总监</div><div class="s-desc">批准 · 同步档案与态势图</div></div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-title"><div class="no">4</div><h3>态势感知 + 智能决策</h3></div>
+      <div class="flow-steps">
+        <div class="step"><div class="s-title">数据汇聚</div><div class="s-desc">进销存 + 终端 + 行政区划</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">T+21 预测</div><div class="s-desc">移动平均 + 季节性</div></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="s-title">智能建议</div><div class="s-desc">采购量四级判定</div></div>
+        <div class="arrow">→</div>
+        <div class="step hot"><div class="s-title">预警联动</div><div class="s-desc">缺货 / 库龄 / 滞销 / 窜货 / 价格</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 技术栈 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Tech Stack</span>
+      <h2>技术栈</h2>
+    </div>
+    <div class="tech-grid">
+      <div class="tech"><div class="t-icon">☕</div><div class="t-name">Spring Boot 3.2</div><div class="t-desc">多模块 Maven 工程</div></div>
+      <div class="tech"><div class="t-icon">🗄️</div><div class="t-name">MyBatis-Plus 3.5</div><div class="t-desc">ORM 持久层</div></div>
+      <div class="tech"><div class="t-icon">🐬</div><div class="t-name">MySQL 8 + Redis</div><div class="t-desc">关系库 + 缓存</div></div>
+      <div class="tech"><div class="t-icon">🛡️</div><div class="t-name">JWT + Security</div><div class="t-desc">认证与授权</div></div>
+      <div class="tech"><div class="t-icon">🖖</div><div class="t-name">Vue 3 + Element Plus</div><div class="t-desc">PC 管理后台</div></div>
+      <div class="tech"><div class="t-icon">📊</div><div class="t-name">ECharts 离线地图</div><div class="t-desc">态势大屏矢量渲染</div></div>
+      <div class="tech"><div class="t-icon">📱</div><div class="t-name">uni-app</div><div class="t-desc">移动扫码采集端</div></div>
+      <div class="tech"><div class="t-icon">🐳</div><div class="t-name">Docker + Nginx</div><div class="t-desc">一键部署与接入</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 角色 ============ -->
+<section style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">RBAC</span>
+      <h2>11 种角色权限</h2>
+      <p>按岗位精细授权，配合组织树实现数据隔离与字段级脱敏。</p>
+    </div>
+    <div class="roles">
+      <span class="role"><span class="r-dot"></span>系统管理员</span>
+      <span class="role"><span class="r-dot"></span>工厂订单审核专员</span>
+      <span class="role"><span class="r-dot"></span>业务经理</span>
+      <span class="role"><span class="r-dot"></span>业务主管</span>
+      <span class="role"><span class="r-dot"></span>业务总监</span>
+      <span class="role"><span class="r-dot"></span>经销商</span>
+      <span class="role"><span class="r-dot"></span>分销商</span>
+      <span class="role"><span class="r-dot"></span>仓库管理员</span>
+      <span class="role"><span class="r-dot"></span>财务人员</span>
+      <span class="role"><span class="r-dot"></span>服务工程师</span>
+      <span class="role"><span class="r-dot"></span>市场分析员</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>前锋电器进销存管理系统</b>（含渠道终端态势分析感知） · 本地化私有部署 · 数据不出内网<br>
+    模块功能可视化介绍 · 生成于 2026-11-06
+  </div>
+</footer>
+
+</body>
+</html>
